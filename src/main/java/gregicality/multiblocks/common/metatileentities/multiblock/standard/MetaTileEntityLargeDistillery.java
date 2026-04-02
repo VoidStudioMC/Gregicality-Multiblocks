@@ -1,21 +1,12 @@
 package gregicality.multiblocks.common.metatileentities.multiblock.standard;
 
-import static gregtech.api.util.RelativeDirection.*;
-
-import java.util.List;
-import java.util.function.Function;
-
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.items.IItemHandlerModifiable;
-
-import org.jetbrains.annotations.NotNull;
-
+import com.cleanroommc.modularui.api.drawable.IKey;
+import gregicality.multiblocks.api.capability.impl.GCYMMultiblockRecipeLogic;
+import gregicality.multiblocks.api.metatileentity.GCYMMultiblockAbility;
+import gregicality.multiblocks.api.metatileentity.GCYMRecipeMapMultiblockController;
+import gregicality.multiblocks.api.render.GCYMTextures;
+import gregicality.multiblocks.common.block.GCYMMetaBlocks;
+import gregicality.multiblocks.common.block.blocks.BlockLargeMultiblockCasing;
 import gregtech.api.capability.IDistillationTower;
 import gregtech.api.capability.IMultipleTankHandler;
 import gregtech.api.capability.impl.DistillationTowerLogicHandler;
@@ -24,6 +15,9 @@ import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.metatileentity.multiblock.IMultiblockPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.api.metatileentity.multiblock.RecipeMapMultiblockController;
+import gregtech.api.metatileentity.multiblock.ui.KeyManager;
+import gregtech.api.metatileentity.multiblock.ui.MultiblockUIBuilder;
+import gregtech.api.metatileentity.multiblock.ui.UISyncer;
 import gregtech.api.pattern.BlockPattern;
 import gregtech.api.pattern.FactoryBlockPattern;
 import gregtech.api.pattern.PatternMatchContext;
@@ -31,20 +25,29 @@ import gregtech.api.pattern.TraceabilityPredicate;
 import gregtech.api.recipes.Recipe;
 import gregtech.api.recipes.RecipeMap;
 import gregtech.api.recipes.RecipeMaps;
-import gregtech.api.util.*;
+import gregtech.api.util.GTTransferUtils;
+import gregtech.api.util.GTUtility;
+import gregtech.api.util.KeyUtil;
+import gregtech.api.util.RelativeDirection;
 import gregtech.client.renderer.ICubeRenderer;
 import gregtech.client.renderer.texture.cube.OrientedOverlayRenderer;
 import gregtech.common.ConfigHolder;
 import gregtech.common.blocks.BlockBoilerCasing;
 import gregtech.common.blocks.MetaBlocks;
 import gregtech.core.sound.GTSoundEvents;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fluids.FluidStack;
+import org.jetbrains.annotations.NotNull;
 
-import gregicality.multiblocks.api.capability.impl.GCYMMultiblockRecipeLogic;
-import gregicality.multiblocks.api.metatileentity.GCYMMultiblockAbility;
-import gregicality.multiblocks.api.metatileentity.GCYMRecipeMapMultiblockController;
-import gregicality.multiblocks.api.render.GCYMTextures;
-import gregicality.multiblocks.common.block.GCYMMetaBlocks;
-import gregicality.multiblocks.common.block.blocks.BlockLargeMultiblockCasing;
+import java.util.function.Function;
+
+import static gregtech.api.util.RelativeDirection.DOWN;
+import static gregtech.api.util.RelativeDirection.FRONT;
+import static gregtech.api.util.RelativeDirection.RIGHT;
 
 /**
  * Requires an unfortunate amount of copy-pasted logic from
@@ -89,19 +92,31 @@ public class MetaTileEntityLargeDistillery extends GCYMRecipeMapMultiblockContro
     }
 
     @Override
-    protected void addDisplayText(List<ITextComponent> textList) {
-        if (isStructureFormed()) {
-            FluidStack stackInTank = importFluids.drain(Integer.MAX_VALUE, false);
-            if (stackInTank != null && stackInTank.amount > 0) {
-                ITextComponent fluidName = TextComponentUtil.setColor(GTUtility.getFluidTranslation(stackInTank),
-                        TextFormatting.AQUA);
-                textList.add(TextComponentUtil.translationWithColor(
-                        TextFormatting.GRAY,
-                        "gregtech.multiblock.distillation_tower.distilling_fluid",
-                        fluidName));
-            }
+    protected void configureDisplayText(MultiblockUIBuilder builder) {
+        builder.setWorkingStatus(recipeMapWorkable.isWorkingEnabled(), recipeMapWorkable.isActive())
+                .addRecipeMapLine(getCurrentRecipeMap())
+                .addEnergyUsageLine(this.getEnergyContainer())
+                .addEnergyTierLine(GTUtility.getTierByVoltage(recipeMapWorkable.getMaxVoltage()))
+                .addCustom(this::addTieredHatch)
+                .addCustom(this::addDistilling)
+                .addParallelsLine(recipeMapWorkable.getParallelLimit())
+                .addWorkingStatusLine()
+                .addProgressLine(recipeMapWorkable.getProgress(), recipeMapWorkable.getMaxProgress())
+                .addRecipeOutputLine(recipeMapWorkable);
+    }
+
+    private void addDistilling(KeyManager keyManager, UISyncer syncer) {
+        if (!isStructureFormed()) {
+            return;
         }
-        super.addDisplayText(textList);
+
+        FluidStack stackInTank = syncer.syncFluidStack(() -> importFluids.drain(Integer.MAX_VALUE, false));
+        if (stackInTank == null || stackInTank.amount <= 0) {
+            return;
+        }
+
+        IKey fluidName = KeyUtil.fluid(stackInTank).style(TextFormatting.AQUA);
+        keyManager.add(KeyUtil.lang(TextFormatting.GRAY, "gregtech.multiblock.distillation_tower.distilling_fluid", fluidName));
     }
 
     @Override
@@ -218,29 +233,9 @@ public class MetaTileEntityLargeDistillery extends GCYMRecipeMapMultiblockContro
         }
 
         @Override
-        protected boolean setupAndConsumeRecipeInputs(@NotNull Recipe recipe,
-                                                      @NotNull IItemHandlerModifiable importInventory,
-                                                      @NotNull IMultipleTankHandler importFluids) {
+        protected boolean checkOutputSpaceFluids(@NotNull Recipe recipe, @NotNull IMultipleTankHandler exportFluids) {
             if (!usesAdvHatchLogic()) {
-                return super.setupAndConsumeRecipeInputs(recipe, importInventory, importFluids);
-            }
-
-            this.overclockResults = calculateOverclock(recipe);
-
-            modifyOverclockPost(overclockResults, recipe.getRecipePropertyStorage());
-
-            if (!hasEnoughPower(overclockResults)) {
-                return false;
-            }
-
-            IItemHandlerModifiable exportInventory = getOutputInventory();
-
-            // We have already trimmed outputs and chanced outputs at this time
-            // Attempt to merge all outputs + chanced outputs into the output bus, to prevent voiding chanced outputs
-            if (!metaTileEntity.canVoidRecipeItemOutputs() &&
-                    !GTTransferUtils.addItemsToItemHandler(exportInventory, true, recipe.getAllItemOutputs())) {
-                this.isOutputsFull = true;
-                return false;
+                return super.checkOutputSpaceFluids(recipe, exportFluids);
             }
 
             // Perform layerwise fluid checks
@@ -249,19 +244,14 @@ public class MetaTileEntityLargeDistillery extends GCYMRecipeMapMultiblockContro
                 this.isOutputsFull = true;
                 return false;
             }
-
-            this.isOutputsFull = false;
-            if (recipe.matches(true, importInventory, importFluids)) {
-                this.metaTileEntity.addNotifiedInput(importInventory);
-                return true;
-            }
-            return false;
+            return true;
         }
 
         @Override
         protected IMultipleTankHandler getOutputTank() {
-            if (usesAdvHatchLogic())
+            if (usesAdvHatchLogic()) {
                 return handler.getFluidTanks();
+            }
 
             return super.getOutputTank();
         }
