@@ -39,4 +39,5 @@
  */
 dependencies {
     api(files("libs/gregtech-1.12.2-2.9.0-voidstudio-dev.jar"))
+    api("com.cleanroommc:modularui:3.0.4") { transitive = false }
 }
