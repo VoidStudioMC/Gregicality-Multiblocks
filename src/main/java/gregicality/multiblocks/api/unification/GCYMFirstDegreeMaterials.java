@@ -12,8 +12,7 @@ import gregtech.api.unification.material.properties.BlastProperty;
 
 public final class GCYMFirstDegreeMaterials {
 
-    private GCYMFirstDegreeMaterials() {
-    }
+    private GCYMFirstDegreeMaterials() {}
 
     public static void init() {
         Stellite100 = new Material.Builder(3000, gcymId("stellite_100"))

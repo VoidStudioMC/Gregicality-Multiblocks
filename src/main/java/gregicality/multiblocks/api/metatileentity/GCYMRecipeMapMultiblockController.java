@@ -1,8 +1,15 @@
 package gregicality.multiblocks.api.metatileentity;
 
-import gregicality.multiblocks.api.capability.IParallelMultiblock;
-import gregicality.multiblocks.api.capability.impl.GCYMMultiblockRecipeLogic;
-import gregicality.multiblocks.common.GCYMConfigHolder;
+import java.util.List;
+
+import net.minecraft.client.resources.I18n;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import gregtech.api.GTValues;
 import gregtech.api.metatileentity.ITieredMetaTileEntity;
 import gregtech.api.metatileentity.multiblock.MultiMapMultiblockController;
@@ -13,14 +20,10 @@ import gregtech.api.pattern.TraceabilityPredicate;
 import gregtech.api.recipes.RecipeMap;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.KeyUtil;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
+import gregicality.multiblocks.api.capability.IParallelMultiblock;
+import gregicality.multiblocks.api.capability.impl.GCYMMultiblockRecipeLogic;
+import gregicality.multiblocks.common.GCYMConfigHolder;
 
 public abstract class GCYMRecipeMapMultiblockController extends MultiMapMultiblockController
                                                         implements IParallelMultiblock {

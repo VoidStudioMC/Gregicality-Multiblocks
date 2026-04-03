@@ -1,12 +1,22 @@
 package gregicality.multiblocks.common.metatileentities.multiblock.standard;
 
+import static gregtech.api.util.RelativeDirection.DOWN;
+import static gregtech.api.util.RelativeDirection.FRONT;
+import static gregtech.api.util.RelativeDirection.RIGHT;
+
+import java.util.function.Function;
+
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fluids.FluidStack;
+
+import org.jetbrains.annotations.NotNull;
+
 import com.cleanroommc.modularui.api.drawable.IKey;
-import gregicality.multiblocks.api.capability.impl.GCYMMultiblockRecipeLogic;
-import gregicality.multiblocks.api.metatileentity.GCYMMultiblockAbility;
-import gregicality.multiblocks.api.metatileentity.GCYMRecipeMapMultiblockController;
-import gregicality.multiblocks.api.render.GCYMTextures;
-import gregicality.multiblocks.common.block.GCYMMetaBlocks;
-import gregicality.multiblocks.common.block.blocks.BlockLargeMultiblockCasing;
+
 import gregtech.api.capability.IDistillationTower;
 import gregtech.api.capability.IMultipleTankHandler;
 import gregtech.api.capability.impl.DistillationTowerLogicHandler;
@@ -35,19 +45,13 @@ import gregtech.common.ConfigHolder;
 import gregtech.common.blocks.BlockBoilerCasing;
 import gregtech.common.blocks.MetaBlocks;
 import gregtech.core.sound.GTSoundEvents;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.fluids.FluidStack;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Function;
-
-import static gregtech.api.util.RelativeDirection.DOWN;
-import static gregtech.api.util.RelativeDirection.FRONT;
-import static gregtech.api.util.RelativeDirection.RIGHT;
+import gregicality.multiblocks.api.capability.impl.GCYMMultiblockRecipeLogic;
+import gregicality.multiblocks.api.metatileentity.GCYMMultiblockAbility;
+import gregicality.multiblocks.api.metatileentity.GCYMRecipeMapMultiblockController;
+import gregicality.multiblocks.api.render.GCYMTextures;
+import gregicality.multiblocks.common.block.GCYMMetaBlocks;
+import gregicality.multiblocks.common.block.blocks.BlockLargeMultiblockCasing;
 
 /**
  * Requires an unfortunate amount of copy-pasted logic from
@@ -116,7 +120,8 @@ public class MetaTileEntityLargeDistillery extends GCYMRecipeMapMultiblockContro
         }
 
         IKey fluidName = KeyUtil.fluid(stackInTank).style(TextFormatting.AQUA);
-        keyManager.add(KeyUtil.lang(TextFormatting.GRAY, "gregtech.multiblock.distillation_tower.distilling_fluid", fluidName));
+        keyManager.add(KeyUtil.lang(TextFormatting.GRAY, "gregtech.multiblock.distillation_tower.distilling_fluid",
+                fluidName));
     }
 
     @Override

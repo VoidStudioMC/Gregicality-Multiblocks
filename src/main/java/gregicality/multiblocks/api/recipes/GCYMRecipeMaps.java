@@ -8,7 +8,8 @@ import gregtech.core.sound.GTSoundEvents;
 
 public final class GCYMRecipeMaps {
 
-    public static final RecipeMap<BlastRecipeBuilder> ALLOY_BLAST_RECIPES = new RecipeMapBuilder<>("alloy_blast_smelter",
+    public static final RecipeMap<BlastRecipeBuilder> ALLOY_BLAST_RECIPES = new RecipeMapBuilder<>(
+            "alloy_blast_smelter",
             new BlastRecipeBuilder())
                     .itemInputs(9)
                     .itemOutputs(0)

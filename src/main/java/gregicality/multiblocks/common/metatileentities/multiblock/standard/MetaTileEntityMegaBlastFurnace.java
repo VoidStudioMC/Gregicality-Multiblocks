@@ -1,11 +1,19 @@
 package gregicality.multiblocks.common.metatileentities.multiblock.standard;
 
-import gregicality.multiblocks.api.capability.impl.GCYMMultiblockRecipeLogic;
-import gregicality.multiblocks.api.metatileentity.GCYMRecipeMapMultiblockController;
-import gregicality.multiblocks.api.render.GCYMTextures;
-import gregicality.multiblocks.common.block.GCYMMetaBlocks;
-import gregicality.multiblocks.common.block.blocks.BlockLargeMultiblockCasing;
-import gregicality.multiblocks.common.block.blocks.BlockUniqueCasing;
+import static gregtech.api.recipes.logic.OverclockingLogic.heatingCoilOC;
+
+import java.util.List;
+
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.resources.I18n;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.World;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import gregtech.api.GTValues;
 import gregtech.api.block.IHeatingCoilBlockStats;
 import gregtech.api.capability.IHeatingCoil;
@@ -40,18 +48,13 @@ import gregtech.common.blocks.BlockMetalCasing;
 import gregtech.common.blocks.BlockMultiblockCasing;
 import gregtech.common.blocks.BlockWireCoil;
 import gregtech.common.blocks.MetaBlocks;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-
-import static gregtech.api.recipes.logic.OverclockingLogic.heatingCoilOC;
+import gregicality.multiblocks.api.capability.impl.GCYMMultiblockRecipeLogic;
+import gregicality.multiblocks.api.metatileentity.GCYMRecipeMapMultiblockController;
+import gregicality.multiblocks.api.render.GCYMTextures;
+import gregicality.multiblocks.common.block.GCYMMetaBlocks;
+import gregicality.multiblocks.common.block.blocks.BlockLargeMultiblockCasing;
+import gregicality.multiblocks.common.block.blocks.BlockUniqueCasing;
 
 public class MetaTileEntityMegaBlastFurnace extends GCYMRecipeMapMultiblockController implements IHeatingCoil {
 
