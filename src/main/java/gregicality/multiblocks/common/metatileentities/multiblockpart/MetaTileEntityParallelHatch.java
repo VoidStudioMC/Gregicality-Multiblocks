@@ -67,6 +67,7 @@ public class MetaTileEntityParallelHatch extends MetaTileEntityMultiblockPart
         this.currentParallel = MathHelper.clamp(this.currentParallel + parallelAmount, 1, this.maxParallel);
     }
 
+    // TODO: Port to MUI2?
     @Override
     protected ModularUI createUI(@NotNull EntityPlayer entityPlayer) {
         ServerWidgetGroup parallelAmountGroup = new ServerWidgetGroup(() -> true);
