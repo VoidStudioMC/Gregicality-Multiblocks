@@ -111,7 +111,7 @@ tile.large_multiblock_casing.steam_casing.name=Промышленный паро
 recipemap.alloy_blast_smelter.name=Доменная плавильня сплавов
 
 # Materials
-gcym.material.stellite_100=Стеллит
+gcym.material.stellite_100=Стеллит-100
 gcym.material.watertight_steel=Водостойкая сталь
 gcym.material.maraging_steel_300=Мартенситностареющая сталь 300
 gcym.material.hastelloy_c_276=Хастеллой-C276
